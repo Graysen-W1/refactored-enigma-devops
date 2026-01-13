@@ -13,9 +13,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/Graysen-W1/refactored-enigma-devops/issues"
   },
-  "homepage": "https://github.com/Graysen-W1/refactored-enigma-devops#readme"
+  "homepage": "https://github.com/Graysen-W1/refactored-enigma-devops#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
 }
