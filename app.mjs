@@ -238,20 +238,20 @@ app.delete('/api/attendance/:id', async (req, res) => {
 app.listen(3000, () => {
   console.log('Server is running on http://localhost:3000')
 })
-=======
-//app.js
-//es5 syntax => import express from 'express'
+// =======
+// //app.js
+// //es5 syntax => import express from 'express'
 
-import express from 'express'
+// import express from 'express'
 
-const app = express()
+// const app = express()
 
-app.get('/', (req, res) => {
-  res.send('Hello Express :) is this working?')
-})
+// app.get('/', (req, res) => {
+//   res.send('Hello Express :) is this working?')
+// })
 
-//start the server
-app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000')
-})
->>>>>>> main
+// //start the server
+// app.listen(3000, () => {
+//   console.log('Server is running on http://localhost:3000')
+// })
+// >>>>>>> main
