@@ -1,4 +1,4 @@
-<<<<<<< dev
+// <<<<<<< dev
 //app.mjs
 //we are in ES6, use this. 
 import 'dotenv/config'; 
