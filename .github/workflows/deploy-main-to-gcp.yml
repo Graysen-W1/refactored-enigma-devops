@@ -36,6 +36,7 @@ jobs:
 
             cd "$APP_DIR"
 
+            git reset --hard
             git pull
             sudo npm ci
 
