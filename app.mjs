@@ -1,30 +1,25 @@
-<<<<<<< dev
-//app.mjs
-//we are in ES6, use this. 
-import 'dotenv/config'; 
+// app.mjs
+// Lunary: Your Daily Journal App with Moon Phase Tracking
+// source: ES6 module syntax - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
+import 'dotenv/config';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { readFile } from 'fs/promises';  // For async file reading
 import { MongoClient, ServerApiVersion, ObjectId } from 'mongodb';
-
-//const { MongoClient, ServerApiVersion } = require('mongodb');
-
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const uri = process.env.MONGO_URI;  
-const myVar = 'injected from server'; // Declare your variable
+const uri = process.env.MONGO_URI;
 
-
+// middleware
+// source: https://expressjs.com/en/starter/static-files.html
 app.use(express.static(join(__dirname, 'public'), { index: false }));
-app.use(express.json()); 
+// source: https://expressjs.com/en/api.html#express.json
+app.use(express.json());
 
-
-
-
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// mongoDB connection
+// source: https://www.mongodb.com/docs/drivers/node/current/quick-start/
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -35,9 +30,7 @@ const client = new MongoClient(uri, {
 
 async function connectToMongo() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } catch (error) {
@@ -46,212 +39,178 @@ async function connectToMongo() {
 }
 connectToMongo();
 
+// get today's date as YYYY-MM-DD
+// source: https://www.w3schools.com/js/js_dates.asp
+function getTodayDate() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 
-// middlewares aka endpoints aka 'get to slash' {http verb} to slash {you name ur endpoint}
+// API ROUTING
+
+// serve the main HTML page
+// source: literate-fortnight-yar app.mjs pattern
 app.get('/', (req, res) => {
-  // res.send('Hello Express'); //string response
-  // res.sendFile('index.html'); // <- this don't work w/o imports, assign, and arguements
-  res.sendFile(join(__dirname, 'public', 'attend.html')) ;
+  res.sendFile(join(__dirname, 'public', 'lunary.html'));
+});
 
-})
+// moon phase API proxy 
+// source: https://www.freeastroapi.com/docs/utilities/moon-phase
+app.get('/api/moon', async (req, res) => {
+  try {
+    const url = new URL('https://astro-api-1qnc.onrender.com/api/v1/moon/phase');
+    url.searchParams.append('date', new Date().toISOString());
+    url.searchParams.append('include_visuals', 'true');
+  
+    url.searchParams.append('style_moon_color', '#c9b3ff');
 
-app.get('/inject', (req, res) => {
-  // Inject a server variable into barry.html: templating view like ejs or pug
-  readFile(join(__dirname, 'public', 'index.html'), 'utf8')
-    .then(html => {
-      // Replace a placeholder in the HTML (e.g., {{myVar}})
-      const injectedHtml = html.replace('{{myVar}}', myVar);
-      res.send(injectedHtml);
-    })
-    .catch(err => {
-      res.status(500).send('Error loading page');
+    const response = await fetch(url, {
+      headers: { 'x-api-key': process.env.ASTRO_API_KEY }
     });
-})
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error('Error fetching moon data:', error);
+    res.status(500).json({ error: 'Failed to fetch moon phase data' });
+  }
+});
 
-// API Health/Endpoints Documentation
+// health check
+// GET /           -> serves lunary.html
+// GET /api/moon   -> moon phase data
+// POST /api/entry -> create entry
+// GET /api/entries -> all entries
+// GET /api/entry/today -> today's entry
+// PUT /api/entry/:id   -> update entry
+// DELETE /api/entry/:id -> delete entry
 app.get('/api/health', (req, res) => {
-  const endpoints = [
-    {
-      method: 'GET',
-      path: '/',
-      description: 'Serve the main HTML page'
-    },
-    {
-      method: 'GET',
-      path: '/inject',
-      description: 'Serve HTML with server-side variable injection'
-    },
-    {
-      method: 'GET',
-      path: '/api/health',
-      description: 'Show all available API endpoints'
-    },
-    {
-      method: 'GET',
-      path: '/api/class',
-      description: 'Get class information (course details)'
-    },
-    {
-      method: 'POST',
-      path: '/api/attendance',
-      description: 'CREATE - Add new student attendance record',
-      bodyExample: {
-        studentName: 'John Doe',
-        date: 'February 3, 2026',
-        keyword: 'devops'
-      }
-    },
-    {
-      method: 'GET',
-      path: '/api/attendance',
-      description: 'READ - Get all attendance records'
-    },
-    {
-      method: 'PUT',
-      path: '/api/attendance/:id',
-      description: 'UPDATE - Update existing attendance record',
-      bodyExample: {
-        studentName: 'Jane Doe',
-        date: 'February 3, 2026',
-        keyword: 'mongodb'
-      }
-    },
-    {
-      method: 'DELETE',
-      path: '/api/attendance/:id',
-      description: 'DELETE - Remove attendance record'
-    }
-  ];
-
-  res.json({
-    status: 'healthy',
-    server: 'CIS 486 DevOps Server',
-    timestamp: new Date().toISOString(),
-    endpoints: endpoints
-  });
+  res.json({ status: 'healthy', server: 'Lunary', timestamp: new Date().toISOString() });
 });
 
-// Class Information API
-app.get('/api/class', (req, res) => {
-  const classInfo = {
-    courseNumber: 'CIS 486',
-    courseName: 'Projects in IS',
-    nickname: 'Full Stack DevOps',
-    semester: 'Spring 2026',
-    calendar: 'Class calendar coming soon!'
-  };
-  res.json(classInfo);
-});
+// JOURNAL ENTRY CRUD 
 
-// CRUD Operations for Attendance
-
-// CREATE - Add student attendance
-app.post('/api/attendance', async (req, res) => {
+// CREATE: adds a new journal entry
+// source: https://www.mongodb.com/docs/drivers/node/current/usage-examples/insertOne/
+app.post('/api/entry', async (req, res) => {
   try {
-    const { studentName, date, keyword } = req.body;
-    
-    if (!studentName || !date || !keyword) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    const { title, content } = req.body;
+
+    if (!title || !content) {
+      return res.status(400).json({ error: 'Title and content are required' });
     }
 
     const db = client.db('cis486');
-    const collection = db.collection('attendance');
-    
-    const attendanceRecord = {
-      studentName,
-      date,
-      keyword,
-      timestamp: new Date()
+    const collection = db.collection('entries');
+    const today = getTodayDate();
+
+    // this checks if an entry already exists for today
+    const existing = await collection.findOne({ date: today });
+    if (existing) {
+      return res.status(409).json({ error: 'An entry for today already exists. Please edit it instead.' });
+    }
+
+    const entry = {
+      title,
+      content,
+      date: today,
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
-    
-    const result = await collection.insertOne(attendanceRecord);
-    res.json({ message: 'Attendance recorded!', id: result.insertedId });
+
+    const result = await collection.insertOne(entry);
+    res.status(201).json({ message: 'Journal entry saved!', id: result.insertedId });
   } catch (error) {
-    console.error('Error creating attendance:', error);
-    res.status(500).json({ error: 'Failed to record attendance' });
+    console.error('Error creating entry:', error);
+    res.status(500).json({ error: 'Failed to save journal entry' });
   }
 });
 
-// READ - Get all attendance records
-app.get('/api/attendance', async (req, res) => {
+// READ: this gets all journal entries, which newest is sorted first
+// source: https://www.mongodb.com/docs/drivers/node/current/usage-examples/find/
+app.get('/api/entries', async (req, res) => {
   try {
     const db = client.db('cis486');
-    const collection = db.collection('attendance');
-    
-    const records = await collection.find({}).toArray();
-    res.json(records);
+    const collection = db.collection('entries');
+    // source: https://www.w3schools.com/jsref/jsref_sort.asp
+    const entries = await collection.find({}).sort({ date: -1 }).toArray();
+    res.json(entries);
   } catch (error) {
-    console.error('Error reading attendance:', error);
-    res.status(500).json({ error: 'Failed to get attendance records' });
+    console.error('Error reading entries:', error);
+    res.status(500).json({ error: 'Failed to get journal entries' });
   }
 });
 
-// UPDATE - Update attendance record
-app.put('/api/attendance/:id', async (req, res) => {
+// READ: this gets today's journal entry
+app.get('/api/entry/today', async (req, res) => {
+  try {
+    const db = client.db('cis486');
+    const collection = db.collection('entries');
+    const today = getTodayDate();
+    const entry = await collection.findOne({ date: today });
+
+    if (!entry) {
+      return res.json({ exists: false });
+    }
+
+    res.json({ exists: true, entry });
+  } catch (error) {
+    console.error('Error reading today\'s entry:', error);
+    res.status(500).json({ error: 'Failed to get today\'s entry' });
+  }
+});
+
+// UPDATE: this updates a journal entry by ID
+// source: https://www.mongodb.com/docs/drivers/node/current/usage-examples/updateOne/
+app.put('/api/entry/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { studentName, date, keyword } = req.body;
-    
+    const { title, content } = req.body;
+
     const db = client.db('cis486');
-    const collection = db.collection('attendance');
-    
+    const collection = db.collection('entries');
+
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
-      { $set: { studentName, date, keyword, updatedAt: new Date() } }
+      { $set: { title, content, updatedAt: new Date() } }
     );
-    
+
     if (result.matchedCount === 0) {
-      return res.status(404).json({ error: 'Record not found' });
+      return res.status(404).json({ error: 'Entry not found' });
     }
-    
-    res.json({ message: 'Attendance updated!' });
+
+    res.json({ message: 'Journal entry updated!' });
   } catch (error) {
-    console.error('Error updating attendance:', error);
-    res.status(500).json({ error: 'Failed to update attendance' });
+    console.error('Error updating entry:', error);
+    res.status(500).json({ error: 'Failed to update journal entry' });
   }
 });
 
-// DELETE - Delete attendance record
-app.delete('/api/attendance/:id', async (req, res) => {
+// DELETE: this deletes a journal entry by ID
+// source: https://www.mongodb.com/docs/drivers/node/current/usage-examples/deleteOne/
+app.delete('/api/entry/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const db = client.db('cis486');
-    const collection = db.collection('attendance');
-    
+    const collection = db.collection('entries');
+
     const result = await collection.deleteOne({ _id: new ObjectId(id) });
-    
+
     if (result.deletedCount === 0) {
-      return res.status(404).json({ error: 'Record not found' });
+      return res.status(404).json({ error: 'Entry not found' });
     }
-    
-    res.json({ message: 'Attendance deleted!' });
+
+    res.json({ message: 'Journal entry deleted!' });
   } catch (error) {
-    console.error('Error deleting attendance:', error);
-    res.status(500).json({ error: 'Failed to delete attendance' });
+    console.error('Error deleting entry:', error);
+    res.status(500).json({ error: 'Failed to delete journal entry' });
   }
 });
 
-
-
-//start the server. 
+// this starts the server
 app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000')
-})
-=======
-//app.js
-//es5 syntax => import express from 'express'
-
-import express from 'express'
-
-const app = express()
-
-app.get('/', (req, res) => {
-  res.send('Hello Express :) is this working?')
-})
-
-//start the server
-app.listen(3000, () => {
-  console.log('Server is running on http://localhost:3000')
-})
->>>>>>> main
+  console.log('Lunary is running on http://localhost:3000');
+});

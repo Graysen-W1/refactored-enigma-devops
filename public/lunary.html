@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lunary</title>
+
+  <!-- This code is referenced from my old project in CIS-376 Web Dev class : GitHub link to old project https://github.com/Graysen-W1/Blog-Admin -->
+
+  <!-- normalize.css - source: Blog-Admin index.html -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  <!-- bootstrap 5 css - source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <!-- bootstrap icons - source: Blog-Admin index.html -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <!-- google fonts (Outfit) - source: Blog-Admin style.css -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+
+  <!-- dark custom theme inspired by https://css.glass -->
+  <style>
+    body {
+      background-color: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 60px;
+      font-size: 1.45rem;
+    }
+
+    /* source: https://www.w3schools.com/css/css3_backgrounds.asp */
+    .moon-section {
+      text-align: center;
+      padding: 50px 15px;
+    }
+
+    /* container for the svg moon visual from FreeAstroAPI */
+    .moon-visual {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .moon-visual svg {
+      width: 260px;
+      height: 260px;
+    }
+
+    .phase-name {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #c9b3ff;
+    }
+
+    .illumination {
+      font-size: 1.15rem;
+      color: #8888aa;
+    }
+
+    .journal-section {
+      background: #16213e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 35px;
+    }
+
+    .journal-section h4 {
+      color: #c9b3ff;
+      margin-bottom: 15px;
+    }
+
+    /* source: https://www.w3schools.com/css/css_form.asp */
+    .form-control, .form-control:focus {
+      background-color: #0f3460;
+      border: 1px solid #2a2a4a;
+      color: #e0e0e0;
+    }
+
+    .form-control::placeholder {
+      color: #666688;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 0 0.2rem rgba(201, 179, 255, 0.25);
+      border-color: #c9b3ff;
+    }
+
+    .btn-lunary {
+      background-color: #533483;
+      color: #e0e0e0;
+      border: none;
+    }
+
+    .btn-lunary:hover {
+      background-color: #6b44a0;
+      color: #ffffff;
+    }
+
+    .btn-past {
+      background-color: #16213e;
+      color: #c9b3ff;
+      border: 1px solid #2a2a4a;
+    }
+
+    .btn-past:hover {
+      background-color: #1a1a2e;
+      color: #ffffff;
+    }
+
+    .date-display {
+      text-align: right;
+      color: #8888aa;
+      font-size: 0.95rem;
+      padding: 10px 15px;
+    }
+
+    .app-title {
+      color: #c9b3ff;
+      font-weight: 700;
+      font-size: 2.5rem;
+      padding: 15px;
+    }
+
+    /* past entries modal */
+    /* source: https://getbootstrap.com/docs/5.0/components/modal/ */
+    .modal-content {
+      background-color: #16213e;
+      color: #e0e0e0;
+      border: 1px solid #2a2a4a;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid #2a2a4a;
+    }
+
+    .modal-footer {
+      border-top: 1px solid #2a2a4a;
+    }
+
+    .btn-close {
+      filter: invert(1);
+    }
+
+    /* source: https://www.w3schools.com/bootstrap5/bootstrap_cards.php */
+    .entry-card {
+      background-color: #0f3460;
+      border: 1px solid #2a2a4a;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+
+    .entry-card h6 {
+      color: #c9b3ff;
+      margin-bottom: 5px;
+    }
+
+    .entry-card small {
+      color: #8888aa;
+    }
+
+    .entry-card p {
+      color: #c0c0c0;
+      margin: 8px 0;
+    }
+
+    /* source: Blog-Admin style.css glassmorphism footer, adapted from https://css.glass */
+    .footer {
+      background: rgba(22, 33, 62, 0.85);
+      box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(4.2px);
+      -webkit-backdrop-filter: blur(4.2px);
+      border-top: 1px solid rgba(201, 179, 255, 0.15);
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      padding: 8px 0;
+    }
+
+    .footer a {
+      color: #8888aa;
+      text-decoration: none;
+      font-size: 0.8rem;
+    }
+
+    .footer a:hover {
+      color: #c9b3ff;
+    }
+
+    .footer span {
+      color: #6666aa;
+      font-size: 0.8rem;
+    }
+
+    /* source: https://getbootstrap.com/docs/5.0/components/toasts/ */
+    .toast {
+      background-color: #16213e;
+      color: #e0e0e0;
+      border: 1px solid #2a2a4a;
+    }
+
+    .toast-header {
+      background-color: #0f3460;
+      color: #c9b3ff;
+      border-bottom: 1px solid #2a2a4a;
+    }
+
+    #message .alert {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- main container -->
+  <!-- source: https://getbootstrap.com/docs/5.0/layout/containers/ -->
+  <div class="container-fluid">
+
+    <!-- header Row, like title & date -->
+    <!-- source: https://getbootstrap.com/docs/5.0/layout/grid/ -->
+    <div class="row align-items-center">
+      <div class="col">
+        <h1 class="app-title">Lunary</h1>
+      </div>
+      <div class="col date-display">
+        <span id="todayDate"></span>
+      </div>
+    </div>
+
+    <!-- main content row -->
+    <div class="row mt-2 px-3">
+      <!-- left column for the Moon Phase -->
+      <div class="col-md-4 moon-section">
+        <h5 class="mb-3" style="color: #8888aa;">Moon Phase</h5>
+        <div class="moon-visual" id="moonVisual">🌙</div>
+        <div class="phase-name" id="phaseName">Loading...</div>
+        <div class="illumination" id="illumination"></div>
+      </div>
+
+      <!-- right column for the journal entry -->
+      <div class="col-md-8">
+        <div class="journal-section">
+          <h4>Today's Journal Entry</h4>
+          <div id="message"></div>
+
+          <!-- source: https://www.w3schools.com/html/html_forms.asp -->
+          <form id="entryForm" onsubmit="event.preventDefault(); saveEntry();">
+            <div class="mb-3">
+              <label for="entryTitle" class="form-label">Title</label>
+              <input type="text" class="form-control" id="entryTitle" placeholder="What's on your mind today?">
+            </div>
+            <div class="mb-3">
+              <label for="entryContent" class="form-label">Journal Entry</label>
+              <textarea class="form-control" id="entryContent" rows="12" placeholder="Write your thoughts..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-lunary me-2" id="saveBtn">
+              <i class="bi bi-journal-check"></i> Save Entry
+            </button>
+            <button type="button" class="btn btn-past" data-bs-toggle="modal" data-bs-target="#pastEntriesModal" onclick="loadPastEntries()">
+              <i class="bi bi-clock-history"></i> Past Entries
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- past entries modal -->
+  <!-- source: https://getbootstrap.com/docs/5.0/components/modal/ (also used in Blog-Admin index.html) -->
+  <div class="modal fade" id="pastEntriesModal" tabindex="-1" aria-labelledby="pastEntriesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pastEntriesLabel"><i class="bi bi-journal-text"></i> Past Entries</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="pastEntriesList">
+          Loading past entries...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- toast notification -->
+  <!-- source: https://getbootstrap.com/docs/5.0/components/toasts/ (also used in Blog-Admin index.html) -->
+  <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <strong class="me-auto">Lunary</strong>
+        <small class="text-muted">just now</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body" id="toastMessage">Action completed!</div>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <!-- source: Blog-Admin index.html footer pattern -->
+  <footer>
+    <div class="footer d-flex justify-content-center align-items-center gap-3">
+      <span>Graysen Wargo</span>
+      <a target="_blank" href="https://github.com/Graysen-W1/refactored-enigma-devops">source code</a>
+      <a target="_blank" href="https://validator.w3.org/nu/?doc=https%3A%2F%2Flunary.barrycumbie.com%2F">validator</a>
+      <a target="_blank" href="https://wave.webaim.org/report#/https://lunary.barrycumbie.com/">wave</a>
+    </div>
+  </footer>
+
+  <!-- bootstrap 5 js - source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <!-- jQuery - source: literate-fortnight-yar projects.html -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <script>
+    // this is a global variable to track if someone is editing today's entry
+    let editingId = null;
+
+    // display today's date
+    // source: https://www.w3schools.com/js/js_dates.asp
+    function displayDate() {
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const today = new Date().toLocaleDateString('en-US', options);
+      $('#todayDate').text(today);
+    }
+
+    // load moon phase from server API proxy (FreeAstroAPI)
+    // source: https://api.jquery.com/jquery.getjson/ (jQuery AJAX)
+    // source: https://www.freeastroapi.com/docs/utilities/moon-phase
+    function loadMoonPhase() {
+      $.getJSON('/api/moon', function(data) {
+        // display SVG visual if available, otherwise fallback to emoji
+        if (data.moon_visual && data.moon_visual.svg) {
+          $('#moonVisual').html(data.moon_visual.svg);
+        } else {
+          $('#moonVisual').text('🌙');
+        }
+        // phase info 
+        var phase = data.phase || {};
+        $('#phaseName').text(phase.name || 'Unknown');
+        // illumination calculation
+        // source: https://www.freeastroapi.com/docs/utilities/moon-phase#illumination
+        if (phase.illumination !== undefined) {
+          $('#illumination').text('Illumination: ' + (phase.illumination * 100).toFixed(1) + '%');
+        }
+      }).fail(function() {
+        $('#moonVisual').text('🌙');
+        $('#phaseName').text('Unavailable');
+        $('#illumination').text('');
+      });
+    }
+
+    // if today's entry exists, load it into the form
+    // source: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+    function loadTodayEntry() {
+      $.getJSON('/api/entry/today', function(data) {
+        if (data.exists) {
+          editingId = data.entry._id;
+          $('#entryTitle').val(data.entry.title);
+          $('#entryContent').val(data.entry.content);
+          $('#saveBtn').html('<i class="bi bi-journal-check"></i> Update Entry');
+        } else {
+          editingId = null;
+          $('#saveBtn').html('<i class="bi bi-journal-check"></i> Save Entry');
+        }
+      });
+    }
+
+    // save/update journal entry
+    // source: https://www.w3schools.com/js/js_ajax_http_send.asp
+    function saveEntry() {
+      var title = $('#entryTitle').val().trim();
+      var content = $('#entryContent').val().trim();
+
+      if (!title || !content) {
+        showMessage('Please fill in both title and content.', 'danger');
+        return;
+      }
+
+      var url = editingId ? '/api/entry/' + editingId : '/api/entry';
+      var method = editingId ? 'PUT' : 'POST';
+
+      // source: https://api.jquery.com/jquery.ajax/
+      $.ajax({
+        url: url,
+        method: method,
+        contentType: 'application/json',
+        data: JSON.stringify({ title: title, content: content }),
+        success: function(result) {
+          toast(result.message);
+          loadTodayEntry();
+        },
+        error: function(xhr) {
+          var errorMsg = xhr.responseJSON ? xhr.responseJSON.error : 'Failed to save entry';
+          showMessage(errorMsg, 'danger');
+        }
+      });
+    }
+
+    // load past entries into the modal
+    // source: https://www.w3schools.com/js/js_htmldom_html.asp
+    function loadPastEntries() {
+      $.getJSON('/api/entries', function(entries) {
+        if (entries.length === 0) {
+          $('#pastEntriesList').html('<p class="text-center">No entries yet. Start writing!</p>');
+          return;
+        }
+
+        var html = '';
+        for (var i = 0; i < entries.length; i++) {
+          var entry = entries[i];
+          html += '<div class="entry-card">';
+          html += '<div class="d-flex justify-content-between align-items-start">';
+          html += '<h6>' + entry.title + '</h6>';
+          html += '<small>' + entry.date + '</small>';
+          html += '</div>';
+          html += '<p>' + entry.content + '</p>';
+          html += '<button class="btn btn-sm btn-lunary me-2" onclick="editEntry(\'' + entry._id + '\', \'' + escapeQuotes(entry.title) + '\', \'' + escapeQuotes(entry.content) + '\')">Edit</button>';
+          html += '<button class="btn btn-sm btn-outline-danger" onclick="deleteEntry(\'' + entry._id + '\')">Delete</button>';
+          html += '</div>';
+        }
+        $('#pastEntriesList').html(html);
+      });
+    }
+
+    // escape single quotes for inline onclick handlers
+    // source: https://www.w3schools.com/jsref/jsref_replace.asp
+    function escapeQuotes(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    // edit an entry from the modal
+    // source: Blog-Admin script.js edit() pattern
+    function editEntry(id, title, content) {
+      editingId = id;
+      $('#entryTitle').val(title.replace(/&quot;/g, '"'));
+      $('#entryContent').val(content.replace(/&quot;/g, '"'));
+      $('#saveBtn').html('<i class="bi bi-journal-check"></i> Update Entry');
+      // close the modal
+      bootstrap.Modal.getInstance(document.getElementById('pastEntriesModal')).hide();
+      toast('Editing entry — make changes and click Update.');
+    }
+
+    // delete an entry
+    // source: Blog-Admin script.js remove() pattern
+    // https://www.w3schools.com/js/js_popup.asp
+    function deleteEntry(id) {
+      if (!confirm('Delete this journal entry?')) return;
+
+      $.ajax({
+        url: '/api/entry/' + id,
+        method: 'DELETE',
+        success: function(result) {
+          toast(result.message);
+          loadPastEntries();
+          loadTodayEntry();
+        },
+        error: function() {
+          showMessage('Failed to delete entry.', 'danger');
+        }
+      });
+    }
+
+    // show inline alert message
+    // source: https://getbootstrap.com/docs/5.0/components/alerts/
+    function showMessage(text, type) {
+      $('#message').html('<div class="alert alert-' + type + ' py-2">' + text + '</div>');
+      setTimeout(function() { $('#message').html(''); }, 3000);
+    }
+
+    // show toast notification
+    // source: https://getbootstrap.com/docs/5.0/components/toasts/ (also used in Blog-Admin script.js)
+    function toast(msg) {
+      $('#toastMessage').text(msg);
+      new bootstrap.Toast(document.getElementById('liveToast')).show();
+    }
+
+    // initialize page on load
+    // source: https://api.jquery.com/ready/
+    $(document).ready(function() {
+      displayDate();
+      loadMoonPhase();
+      loadTodayEntry();
+    });
+  </script>
+</body>
+</html>
