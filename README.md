@@ -69,6 +69,5 @@ Lunary is a daily journal web app. One entry per day. You can reflect on past en
 - **Production:** https://lunary.barrycumbie.com/
 - **Development:** https://dev-refactored-enigma-devops.onrender.com/
 
----
 
 ### Thanks for stopping by, Lunary is about to get a whole lot better. 🌙
