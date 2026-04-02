@@ -34,7 +34,7 @@ If you're curious, here's what my original sketch looked like:
 - Debug case study write-up
 - Search functionality for past journal entries
 
-### Tech Stack
+## Tech Stack
 ---
 
 | Layer | Tech |
