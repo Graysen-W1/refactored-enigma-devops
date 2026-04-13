@@ -5,7 +5,6 @@ import 'dotenv/config';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
-import { connectToMongo } from './models/db.mjs';
 import entryRoutes from './routes/entryRoutes.mjs';
 import moonRoutes from './routes/moonRoutes.mjs';
 import errorHandler from './middleware/errorHandler.mjs';
@@ -19,9 +18,6 @@ const __dirname = dirname(__filename);
 app.use(express.static(join(__dirname, 'public'), { index: false }));
 // source: https://expressjs.com/en/api.html#express.json
 app.use(express.json());
-
-// connect to MongoDB
-connectToMongo();
 
 // serve the main HTML page
 // source: literate-fortnight-yar app.mjs pattern

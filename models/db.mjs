@@ -1,28 +1,22 @@
 // models/db.mjs
-// handles MongoDB connection and exports the client
-// source: https://www.mongodb.com/docs/drivers/node/current/quick-start/
-import { MongoClient, ServerApiVersion } from 'mongodb';
+// handles Firebase/Firestore connection and exports the database
+// source: https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments
+import admin from 'firebase-admin';
+import { readFileSync } from 'fs';
 
-const uri = process.env.MONGO_URI;
+// load the service account key from the path in .env
+// source: https://firebase.google.com/docs/admin/setup#initialize_the_sdk_in_non-google_environments
+const serviceAccount = JSON.parse(
+  readFileSync(process.env.GOOGLE_APPLICATION_CREDENTIALS, 'utf8')
+);
 
-const client = new MongoClient(uri, {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  }
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
 });
 
-// connect to MongoDB and ping to confirm
-async function connectToMongo() {
-  try {
-    await client.connect();
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-  }
-}
+// get Firestore database reference
+// source: https://firebase.google.com/docs/firestore/quickstart#initialize
+const db = admin.firestore();
 
 // source: https://www.w3schools.com/js/js_dates.asp
 function getTodayDate() {
@@ -34,4 +28,4 @@ function getTodayDate() {
 }
 
 // source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
-export { client, connectToMongo, getTodayDate };
+export { db, getTodayDate };

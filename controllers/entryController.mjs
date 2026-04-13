@@ -1,11 +1,11 @@
 // controllers/entryController.mjs
 // this will handle the logic for journal entry CRUD operations
-// source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import
-import { client, getTodayDate } from '../models/db.mjs';
-import { ObjectId } from 'mongodb';
+// source: https://firebase.google.com/docs/firestore/manage-data/add-data
+// source: https://firebase.google.com/docs/firestore/query-data/get-data
+import { db, getTodayDate } from '../models/db.mjs';
 
 // CREATE: adds a new journal entry
-// source: https://www.mongodb.com/docs/drivers/node/current/usage-examples/insertOne/
+// source: https://firebase.google.com/docs/firestore/manage-data/add-data#add_a_document
 async function createEntry(req, res) {
   try {
     const { title, content } = req.body;
@@ -14,13 +14,12 @@ async function createEntry(req, res) {
       return res.status(400).json({ error: 'Title and content are required' });
     }
 
-    const db = client.db('cis486');
-    const collection = db.collection('entries');
     const today = getTodayDate();
 
     // this checks if an entry already exists for today
-    const existing = await collection.findOne({ date: today });
-    if (existing) {
+    // source: https://firebase.google.com/docs/firestore/query-data/queries#simple_queries
+    const snapshot = await db.collection('entries').where('date', '==', today).get();
+    if (!snapshot.empty) {
       return res.status(409).json({ error: 'An entry for today already exists. Please edit it instead.' });
     }
 
@@ -28,12 +27,12 @@ async function createEntry(req, res) {
       title,
       content,
       date: today,
-      createdAt: new Date(),
-      updatedAt: new Date()
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
     };
 
-    const result = await collection.insertOne(entry);
-    res.status(201).json({ message: 'Journal entry saved!', id: result.insertedId });
+    const docRef = await db.collection('entries').add(entry);
+    res.status(201).json({ message: 'Journal entry saved!', id: docRef.id });
   } catch (error) {
     console.error('Error creating entry:', error);
     res.status(500).json({ error: 'Failed to save journal entry' });
@@ -41,14 +40,14 @@ async function createEntry(req, res) {
 }
 
 // READ: this gets all journal entries, newest sorted first
-// source: https://www.mongodb.com/docs/drivers/node/current/usage-examples/find/
-// source: https://www.w3schools.com/jsref/jsref_sort.asp
+// source: https://firebase.google.com/docs/firestore/query-data/order-limit-data
 async function getAllEntries(req, res) {
   try {
-    const db = client.db('cis486');
-    const collection = db.collection('entries');
-    
-    const entries = await collection.find({}).sort({ date: -1 }).toArray();
+    const snapshot = await db.collection('entries').orderBy('date', 'desc').get();
+    const entries = [];
+    snapshot.forEach(doc => {
+      entries.push({ _id: doc.id, ...doc.data() });
+    });
     res.json(entries);
   } catch (error) {
     console.error('Error reading entries:', error);
@@ -57,18 +56,18 @@ async function getAllEntries(req, res) {
 }
 
 // READ: this gets today's journal entry
+// source: https://firebase.google.com/docs/firestore/query-data/queries#simple_queries
 async function getTodayEntry(req, res) {
   try {
-    const db = client.db('cis486');
-    const collection = db.collection('entries');
     const today = getTodayDate();
-    const entry = await collection.findOne({ date: today });
+    const snapshot = await db.collection('entries').where('date', '==', today).get();
 
-    if (!entry) {
+    if (snapshot.empty) {
       return res.json({ exists: false });
     }
 
-    res.json({ exists: true, entry });
+    const doc = snapshot.docs[0];
+    res.json({ exists: true, entry: { _id: doc.id, ...doc.data() } });
   } catch (error) {
     console.error('Error reading today\'s entry:', error);
     res.status(500).json({ error: 'Failed to get today\'s entry' });
@@ -76,23 +75,24 @@ async function getTodayEntry(req, res) {
 }
 
 // UPDATE: this updates a journal entry by ID
-// source: https://www.mongodb.com/docs/drivers/node/current/usage-examples/updateOne/
+// source: https://firebase.google.com/docs/firestore/manage-data/add-data#update-data
 async function updateEntry(req, res) {
   try {
     const { id } = req.params;
     const { title, content } = req.body;
 
-    const db = client.db('cis486');
-    const collection = db.collection('entries');
+    const docRef = db.collection('entries').doc(id);
+    const doc = await docRef.get();
 
-    const result = await collection.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { title, content, updatedAt: new Date() } }
-    );
-
-    if (result.matchedCount === 0) {
+    if (!doc.exists) {
       return res.status(404).json({ error: 'Entry not found' });
     }
+
+    await docRef.update({
+      title,
+      content,
+      updatedAt: new Date().toISOString()
+    });
 
     res.json({ message: 'Journal entry updated!' });
   } catch (error) {
@@ -102,20 +102,19 @@ async function updateEntry(req, res) {
 }
 
 // DELETE: this deletes a journal entry by ID
-// source: https://www.mongodb.com/docs/drivers/node/current/usage-examples/deleteOne/
+// source: https://firebase.google.com/docs/firestore/manage-data/delete-data
 async function deleteEntry(req, res) {
   try {
     const { id } = req.params;
 
-    const db = client.db('cis486');
-    const collection = db.collection('entries');
+    const docRef = db.collection('entries').doc(id);
+    const doc = await docRef.get();
 
-    const result = await collection.deleteOne({ _id: new ObjectId(id) });
-
-    if (result.deletedCount === 0) {
+    if (!doc.exists) {
       return res.status(404).json({ error: 'Entry not found' });
     }
 
+    await docRef.delete();
     res.json({ message: 'Journal entry deleted!' });
   } catch (error) {
     console.error('Error deleting entry:', error);
