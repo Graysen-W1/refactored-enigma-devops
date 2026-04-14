@@ -1,5 +1,5 @@
 // app.mjs
-// main entry point - wires together routes, middleware, and database
+// this is the main entry point where it wires together routes, middleware, and database
 // source: https://expressjs.com/en/starter/hello-world.html
 import 'dotenv/config';
 import express from 'express';
@@ -20,7 +20,7 @@ app.use(express.static(join(__dirname, 'public'), { index: false }));
 // source: https://expressjs.com/en/api.html#express.json
 app.use(express.json());
 
-// serve pages
+// this serves pages
 // source: literate-fortnight-yar app.mjs pattern
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'public', 'login.html'));
@@ -36,7 +36,7 @@ app.use('/api', authRoutes);
 app.use('/api', entryRoutes);
 app.use('/api', moonRoutes);
 
-// error-handling middleware (must be last)
+// error-handling middleware 
 // source: https://expressjs.com/en/guide/error-handling.html
 app.use(errorHandler);
 
