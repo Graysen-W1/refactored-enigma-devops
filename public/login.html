@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lunary - Login</title>
+
+  <!-- normalize.css - source: Blog-Admin index.html -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+  <!-- bootstrap 5 css - source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <!-- bootstrap icons - source: Blog-Admin index.html -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <!-- google fonts (Outfit) - source: Blog-Admin style.css -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+
+  <!-- same dark theme as lunary.html -->
+  <style>
+    body {
+      background-color: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .auth-card {
+      background: #16213e;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 40px;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .auth-card h2 {
+      color: #c9b3ff;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    /* source: https://www.w3schools.com/css/css_form.asp */
+    .form-control, .form-control:focus {
+      background-color: #0f3460;
+      border: 1px solid #2a2a4a;
+      color: #e0e0e0;
+    }
+
+    .form-control::placeholder {
+      color: #666688;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 0 0.2rem rgba(201, 179, 255, 0.25);
+      border-color: #c9b3ff;
+    }
+
+    .btn-lunary {
+      background-color: #533483;
+      color: #e0e0e0;
+      border: none;
+      width: 100%;
+    }
+
+    .btn-lunary:hover {
+      background-color: #6b44a0;
+      color: #ffffff;
+    }
+
+    .toggle-link {
+      color: #c9b3ff;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .toggle-link:hover {
+      color: #ffffff;
+    }
+
+    #message .alert {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- source: https://getbootstrap.com/docs/5.0/layout/containers/ -->
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12">
+
+        <div class="auth-card">
+          <h2 id="formTitle">Login</h2>
+          <div id="message"></div>
+
+          <!-- source: https://getbootstrap.com/docs/5.0/forms/overview/ -->
+          <form id="authForm" onsubmit="event.preventDefault(); handleAuth();">
+            <div class="mb-3" id="usernameGroup">
+              <label for="username" class="form-label">Username</label>
+              <input type="text" class="form-control" id="username" placeholder="Enter username">
+            </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input type="password" class="form-control" id="password" placeholder="Enter password">
+            </div>
+            <button type="submit" class="btn btn-lunary mb-3" id="authBtn">
+              <i class="bi bi-box-arrow-in-right"></i> Login
+            </button>
+          </form>
+
+          <p class="text-center mb-0" style="color: #8888aa;">
+            <span id="toggleText">Don't have an account? </span>
+            <span class="toggle-link" id="toggleLink" onclick="toggleMode()">Register</span>
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- bootstrap 5 js - source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <!-- jQuery - source: literate-fortnight-yar projects.html -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <script>
+    // track whether we're on login or register mode
+    let isLogin = true;
+
+    // toggle between login and register
+    // source: https://www.w3schools.com/js/js_htmldom_html.asp
+    function toggleMode() {
+      isLogin = !isLogin;
+      if (isLogin) {
+        $('#formTitle').text('Login');
+        $('#authBtn').html('<i class="bi bi-box-arrow-in-right"></i> Login');
+        $('#toggleText').text("Don't have an account? ");
+        $('#toggleLink').text('Register');
+      } else {
+        $('#formTitle').text('Register');
+        $('#authBtn').html('<i class="bi bi-person-plus"></i> Register');
+        $('#toggleText').text('Already have an account? ');
+        $('#toggleLink').text('Login');
+      }
+      $('#message').html('');
+    }
+
+    // handle login or register
+    // source: https://api.jquery.com/jquery.ajax/
+    function handleAuth() {
+      var username = $('#username').val().trim();
+      var password = $('#password').val().trim();
+
+      if (!username || !password) {
+        showMessage('Please fill in both fields.', 'danger');
+        return;
+      }
+
+      var url = isLogin ? '/api/login' : '/api/register';
+
+      $.ajax({
+        url: url,
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ username: username, password: password }),
+        success: function(result) {
+          if (isLogin) {
+            // store the token and redirect to journal
+            // source: https://www.w3schools.com/jsref/prop_win_localstorage.asp
+            localStorage.setItem('token', result.token);
+            // source: https://www.w3schools.com/js/js_window_location.asp
+            window.location.href = '/journal';
+          } else {
+            showMessage('Account created! You can log in now.', 'success');
+            toggleMode();
+          }
+        },
+        error: function(xhr) {
+          var errorMsg = xhr.responseJSON ? xhr.responseJSON.error : 'Something went wrong';
+          showMessage(errorMsg, 'danger');
+        }
+      });
+    }
+
+    // show inline alert message
+    // source: https://getbootstrap.com/docs/5.0/components/alerts/
+    function showMessage(text, type) {
+      $('#message').html('<div class="alert alert-' + type + ' py-2">' + text + '</div>');
+      setTimeout(function() { $('#message').html(''); }, 3000);
+    }
+  </script>
+</body>
+</html>

@@ -5,6 +5,7 @@ import 'dotenv/config';
 import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import authRoutes from './routes/authRoutes.mjs';
 import entryRoutes from './routes/entryRoutes.mjs';
 import moonRoutes from './routes/moonRoutes.mjs';
 import errorHandler from './middleware/errorHandler.mjs';
@@ -19,14 +20,19 @@ app.use(express.static(join(__dirname, 'public'), { index: false }));
 // source: https://expressjs.com/en/api.html#express.json
 app.use(express.json());
 
-// serve the main HTML page
+// serve pages
 // source: literate-fortnight-yar app.mjs pattern
 app.get('/', (req, res) => {
+  res.sendFile(join(__dirname, 'public', 'login.html'));
+});
+
+app.get('/journal', (req, res) => {
   res.sendFile(join(__dirname, 'public', 'lunary.html'));
 });
 
 // mount API routes
 // source: https://expressjs.com/en/guide/routing.html#express-router
+app.use('/api', authRoutes);
 app.use('/api', entryRoutes);
 app.use('/api', moonRoutes);
 
