@@ -127,7 +127,7 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
   <script>
-    // track whether we're on login or register mode
+    // this tracks whether you're on login or register mode
     let isLogin = true;
 
     // toggle between login and register
@@ -168,7 +168,7 @@
         data: JSON.stringify({ username: username, password: password }),
         success: function(result) {
           if (isLogin) {
-            // store the token and redirect to journal
+            // this stores the token and redirects to journal
             // source: https://www.w3schools.com/jsref/prop_win_localstorage.asp
             localStorage.setItem('token', result.token);
             // source: https://www.w3schools.com/js/js_window_location.asp

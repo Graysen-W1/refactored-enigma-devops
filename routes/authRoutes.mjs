@@ -1,5 +1,5 @@
 // routes/authRoutes.mjs
-// defines the authentication routes
+// this defines the authentication routes
 // source: https://expressjs.com/en/guide/routing.html
 import { Router } from 'express';
 import { register, login } from '../controllers/authController.mjs';
