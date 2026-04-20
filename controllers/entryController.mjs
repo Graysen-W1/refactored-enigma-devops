@@ -101,6 +101,35 @@ async function updateEntry(req, res) {
   }
 }
 
+// READ: this searches entries by title/content substring (made it case-insensitive)
+// Firestore actually has no native full-text search, so I had to fetch and filter in-memory
+// source: https://firebase.google.com/docs/firestore/query-data/queries
+// source: https://www.w3schools.com/jsref/jsref_includes.asp
+async function searchEntries(req, res) {
+  try {
+    const q = (req.query.q || '').trim().toLowerCase();
+    if (!q) {
+      return res.json([]);
+    }
+
+    const snapshot = await db.collection('entries').orderBy('date', 'desc').get();
+    const results = [];
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const title = (data.title || '').toLowerCase();
+      const content = (data.content || '').toLowerCase();
+      if (title.includes(q) || content.includes(q)) {
+        results.push({ _id: doc.id, ...data });
+      }
+    });
+
+    res.json(results);
+  } catch (error) {
+    console.error('Error searching entries:', error);
+    res.status(500).json({ error: 'Failed to search entries' });
+  }
+}
+
 // DELETE: this deletes a journal entry by ID
 // source: https://firebase.google.com/docs/firestore/manage-data/delete-data
 async function deleteEntry(req, res) {
@@ -123,4 +152,4 @@ async function deleteEntry(req, res) {
 }
 
 // source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/export
-export { createEntry, getAllEntries, getTodayEntry, updateEntry, deleteEntry };
+export { createEntry, getAllEntries, getTodayEntry, searchEntries, updateEntry, deleteEntry };

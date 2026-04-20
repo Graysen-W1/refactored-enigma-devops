@@ -3,7 +3,7 @@
 // source: https://expressjs.com/en/guide/routing.html
 import { Router } from 'express';
 import authCheck from '../middleware/auth.mjs';
-import { createEntry, getAllEntries, getTodayEntry, updateEntry, deleteEntry } from '../controllers/entryController.mjs';
+import { createEntry, getAllEntries, getTodayEntry, searchEntries, updateEntry, deleteEntry } from '../controllers/entryController.mjs';
 
 const router = Router();
 
@@ -11,6 +11,7 @@ const router = Router();
 // source: https://expressjs.com/en/guide/using-middleware.html#middleware.router
 router.post('/entry', authCheck, createEntry);
 router.get('/entries', authCheck, getAllEntries);
+router.get('/entries/search', authCheck, searchEntries);
 router.get('/entry/today', authCheck, getTodayEntry);
 router.put('/entry/:id', authCheck, updateEntry);
 router.delete('/entry/:id', authCheck, deleteEntry);
