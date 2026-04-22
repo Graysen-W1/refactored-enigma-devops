@@ -1,28 +1,70 @@
-# Lunary 🌙
-Hey visitor! Welcome to Lunary (lunar + diary), a place to daily journal. Whenever you have inspiration to write, you can put your thoughts here. BUT, make it count because you only have ONE journal entry per day. BUT, you can see all your past entries. This gives you space for reflection (or maybe a spot to hold your inspiring ideas). 
+# Lunary 🌙 - App Idea
+> one thought, one day, one moon.
 
-The focus of this project is to promote mental well-being. Sometimes life gets a little busy, but it's important to slow down and take time for yourself. Lunary is a place for just that. 
+- **As a** student, life gets busy and your mind races; a million thoughts while you try to rest.
+- **I want** a place to slow down and just... write. One thought. That's all you need.
+- **So try** Lunary. Put it down, let it go, and enjoy the moon while you're at it, even if it's at 2am. 
 
-Some want an outlet to let off some steam, or write an inspiring idea down; there are endless reasons to write. You don't have to feel pressured to write a lot on a paper journal or even a digital one. All you need is something.
+<img width="550" height="550" alt="app_inspo!" src="https://github.com/user-attachments/assets/4016faaa-1482-4d7c-9828-dc2c727e9674" />
 
-See what Lunary can do for you. While you're writing your thoughts down, you'll be reminded about the moon and its current phase. The moon is calming, a focus for Lunary.
+## Target Users
+
+- Anyone looking for a simple, low-pressure journaling habit
+- Students, or anyone who wants a moment to reflect
+- People who like the moon (hey, it's a thing)
+
+## Features
+
+**Current Features:**
+- One journal entry per day (CRUD)
+- View past entries
+- Live moon phase display (FreeAstroAPI)
+- Deployed on GCP (production) and Render (dev)
+- CI/CD with GitHub Actions
+
+*...more coming... detailed below...*
 
 ## Tech Stack
-- Node.js
-- Express.js
-- MongoDB
-- dotenv
-- nodemon
-- Bootstrap 5
-- jQuery
-- normalize.css
-- FreeAstroAPI (Moon Phase)
-- GitHub Actions (CI/CD)
-- Google Cloud Platform (Production)
-- Render (Development)
+
+| Layer | Tech |
+|-------|------|
+| Runtime | Node.js |
+| Framework | Express.js |
+| Database | Firebase (Google) |
+| Auth | JWT (JSON Web Tokens) |
+| Frontend | Bootstrap 5, jQuery, normalize.css |
+| API | FreeAstroAPI (Moon Phase) |
+| CI/CD | GitHub Actions |
+| Production | Google Cloud Platform |
+| Development | Render |
+| Process Manager | PM2 |
+| Reverse Proxy | Nginx |
+
+
+## Product Backlog
+
+### Selected = Pathway 1: The Clean Upgrade 🫧
+
+### Planned Features:
+- [X] Refactored modern Node architecture (`/routes`, `/controllers`, `/models`, `/middleware`)
+- [X] User registration & login with JWT authentication
+- [X] Firebase (Firestore) database integration
+- [X] Redesigned UI/UX with Bootstrap 5, maybe some stars ✨
+- [X] Deployment guides (like GCP, Nginx, PM2, env variables)
+- [X] Debug case study write-up
+- [X] Search functionality for past journal entries
+---
+
+- Milestones listed *[Here](https://github.com/Graysen-W1/lunary/milestones)*
+- Issues listed *[Here](https://github.com/Graysen-W1/lunary/issues)*
 
 ## Deployment
-- Production: https://lunary.barrycumbie.com/
-- Development: https://dev-refactored-enigma-devops.onrender.com/
 
-### Thanks for stopping by, I hope Lunary is helpful to you!
+- **Production:** https://lunary.barrycumbie.com/
+- **Development:** https://dev-refactored-enigma-devops.onrender.com/
+---
+- [X] `Barrycumbie` added as collaborator
+- [X] GCP `student-key` linked
+
+
+### Thanks for stopping by, Lunary is about to get a whole lot better. 🌙
