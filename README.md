@@ -50,8 +50,22 @@
   | 🐛 Debug Case Study | I wrote up a production outage where OOM killed my Node app on an undersized VM, including how I investigated and fixed it. | [Wiki: Debug Case Study](https://github.com/Graysen-W1/lunary/wiki/Debug-Case-Study), [Milestone #8](https://github.com/Graysen-W1/lunary/milestone/8) | GCP's "Running" status does not mean the guest OS is healthy. Serial console logs were what actually told me what was happening. |
 ---
 
-## Sprint 99
-[working on it now lol]
+## [Sprint 99](https://github.com/Graysen-W1/lunary/milestone/9)    
+ Looking ahead, here is what I would build, improve, and fix next.                                           
+                                                                                                             
+  ### 🚀 Features                                                                                            
+  - [#19 Add tag support to journal entries](https://github.com/Graysen-W1/lunary/issues/19)
+  - [#20 Entry export (PDF or markdown)](https://github.com/Graysen-W1/lunary/issues/20)                     
+  - [#21 Streak tracker](https://github.com/Graysen-W1/lunary/issues/21)                                     
+   
+  ### ✨ Improvements                                                                                        
+  - [#22 Add password confirmation on registration](https://github.com/Graysen-W1/lunary/issues/22)
+  - [#23 Auto-save draft entries](https://github.com/Graysen-W1/lunary/issues/23)                            
+  - [#24 Add a character count in the journaling text area](https://github.com/Graysen-W1/lunary/issues/24)  
+   
+  ### 🐛 Known Bugs                                                                                          
+  - [#25 Editing a past journal entry overwrites today's draft](https://github.com/Graysen-W1/lunary/issues/25)                                                     
+  - [#26 Line breaks on journal entries disappear](https://github.com/Graysen-W1/lunary/issues/26)
 
 ## Deployment
 
