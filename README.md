@@ -47,12 +47,12 @@
 
 ### Planned Features:
 - [X] Refactored modern Node architecture (`/routes`, `/controllers`, `/models`, `/middleware`)
-- [ ] User registration & login with JWT authentication
-- [ ] Firebase (Firestore) database integration
-- [ ] Redesigned UI/UX with Bootstrap 5, maybe some stars ✨
-- [ ] Deployment guides (like GCP, Nginx, PM2, env variables)
-- [ ] Debug case study write-up
-- [ ] Search functionality for past journal entries
+- [X] User registration & login with JWT authentication
+- [X] Firebase (Firestore) database integration
+- [X] Redesigned UI/UX with Bootstrap 5, maybe some stars ✨
+- [X] Deployment guides (like GCP, Nginx, PM2, env variables)
+- [X] Debug case study write-up
+- [X] Search functionality for past journal entries
 ---
 
 - Milestones listed *[Here](https://github.com/Graysen-W1/lunary/milestones)*
